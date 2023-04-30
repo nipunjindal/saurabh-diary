@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CSV to HTML Table</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		@font-face {
+			font-family: 'krutidev10';
+			src: url('krutidev10.ttf');
+		}
+
+		table {
+			font-family: Arial, Helvetica, sans-serif;
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		td, th {
+			border: 1px solid #ddd;
+			padding: 8px;
+			font-family: 'krutidev10', Arial, Helvetica, sans-serif;
+		}
+
+		th {
+			padding-top: 12px;
+			padding-bottom: 12px;
+			text-align: left;
+			background-color: #04AA6D;
+			color: white;
+		}
+
+		tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+	</style>
+</head>
+<body>
+	<table id="csvTable">
+		<thead>
+			<tr>
+				<th>OSN NO</th>
+				<th>Party</th>
+				<th>PID</th>
+				<th>Group Code</th>
+				<th>Work Done</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<script>
+		// Path to CSV file
+		var csvPath = 'data.csv';
+
+		// Load CSV data from file
+		fetch(csvPath)
+			.then(response => response.text())
+			.then(csvData => {
+				// Parse CSV and convert to array of objects
+				var rows = csvData.split("\n");
+				var headers = rows[0].split(",");
+				var data = [];
+				for (var i = 1; i < rows.length; i++) {
+					var values = rows[i].split(",");
+					if (values.length == headers.length) {
+						var obj = {};
+						for (var j = 0; j < headers.length; j++) {
+							var key = headers[j].trim();
+							var rawValue = values[j].trim().replace(/"/g, ''); // remove quotes
+							var value = rawValue;
+							obj[key] = value;
+						}
+						data.push(obj);
+					}
+				}
+
+				// Create HTML table
+				var tbody = document.querySelector('#csvTable tbody');
+				for (var i = 0; i < data.length; i++) {
+					var row = document.createElement('tr');
+					for (var prop in data[i]) {
+						var cell = document.createElement('td');
+						cell.innerHTML = data[i][prop];
+						row.appendChild(cell);
+					}
+					tbody.appendChild(row);
+				}
+			})
+			.catch(error => console.error(error));
+	</script>
+</body>
+</html>
