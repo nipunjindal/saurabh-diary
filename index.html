@@ -35,6 +35,12 @@
             background-color: #f2f2f2;
         }
 
+        /* Add a new class for the "Next Date" cells */
+        .no-font {
+            font-family: Arial, Helvetica, sans-serif !important;
+            font-size: 14px;
+        }
+
         #searchContainer {
             text-align: center;
             margin: 20px 0;
@@ -50,12 +56,6 @@
 
         #tableContainer {
             margin-top: 40px;
-        }
-
-        /* Add a new class for the "Next Date" cells */
-        .no-font {
-            font-family: Arial, Helvetica, sans-serif !important;
-            font-size: 14px;
         }
     </style>
 </head>
@@ -92,6 +92,14 @@
                 header: true,
                 complete: function (results) {
                     data = results.data;
+                    // Convert date strings to date objects
+                    data.forEach(function (obj) {
+                        obj.Next_Date_Object = new Date(obj.Next_Date)
+                    });
+                    // Sort data by Next_Date_Object in ascending order
+                    data.sort(function (a, b) {
+                        return b.Next_Date_Object - a.Next_Date_Object;
+                    });
                     renderTable(data); // Render table with all data
                 }
             });
@@ -112,8 +120,8 @@
             partyNameCell.innerHTML = data[i]['Party_Name'];
             row.appendChild(partyNameCell);
             var nextDateCell = document.createElement('td');
-            // Convert the date string to the desired format
-            var nextDate = new Date(data[i]['Next_Date']);
+            // Convert the date object to the desired format
+            var nextDate = data[i]['Next_Date_Object'];
             nextDateCell.innerHTML = nextDate.toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'short',
@@ -143,6 +151,5 @@
         renderTable(filteredData); // Render table with filtered data
     });
 </script>
-
 </body>
 </html>
