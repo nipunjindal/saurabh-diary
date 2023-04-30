@@ -1,93 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>CSV to HTML Table</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<style>
-		@font-face {
-			font-family: 'krutidev10';
-			src: url('krutidev10.ttf');
-		}
+    <title>CSV to HTML Table</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @font-face {
+            font-family: 'krutidev10';
+            src: url('krutidev10.ttf');
+        }
 
-		table {
-			font-family: Arial, Helvetica, sans-serif;
-			border-collapse: collapse;
-			width: 100%;
-		}
+        table {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-		td, th {
-			border: 1px solid #ddd;
-			padding: 8px;
-			font-family: 'krutidev10', Arial, Helvetica, sans-serif;
-		}
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-family: 'krutidev10', Arial, Helvetica, sans-serif;
+        }
 
-		th {
-			padding-top: 12px;
-			padding-bottom: 12px;
-			text-align: left;
-			background-color: #04AA6D;
-			color: white;
-		}
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #04AA6D;
+            color: white;
+        }
 
-		tr:nth-child(even) {
-			background-color: #f2f2f2;
-		}
-	</style>
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-	<table id="csvTable">
-		<thead>
-			<tr>
-				<th>OSN NO</th>
-				<th>Party</th>
-				<th>PID</th>
-				<th>Group Code</th>
-				<th>Work Done</th>
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-	</table>
-	<script>
-		// Path to CSV file
-		var csvPath = 'data.csv';
+<div id="searchContainer"><input type="text" id="searchInput" placeholder="Search...">
+    <button id="searchButton">Search</button>
+    <table id="csvTable">
+        <thead>
+        <tr>
+            <th>OSN NO</th>
+            <th>Party</th>
+            <th>PID</th>
+            <th>Group Code</th>
+            <th>Work Done</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script>
+        var data = [];
+        // Path to CSV file
+        var csvPath = 'data.csv';
 
-		// Load CSV data from file
-		fetch(csvPath)
-			.then(response => response.text())
-			.then(csvData => {
-				// Parse CSV and convert to array of objects
-				var rows = csvData.split("\n");
-				var headers = rows[0].split(",");
-				var data = [];
-				for (var i = 1; i < rows.length; i++) {
-					var values = rows[i].split(",");
-					if (values.length == headers.length) {
-						var obj = {};
-						for (var j = 0; j < headers.length; j++) {
-							var key = headers[j].trim();
-							var rawValue = values[j].trim().replace(/"/g, ''); // remove quotes
-							var value = rawValue;
-							obj[key] = value;
-						}
-						data.push(obj);
-					}
-				}
+        // Load CSV data from file
+        fetch(csvPath)
+            .then(response => response.text())
+            .then(csvData => {
+                // Parse CSV using Papa Parse and convert to array of objects
+                Papa.parse(csvData, {
+                    header: true,
+                    complete: function (results) {
+                        data = results.data;
+                        renderTable(data); // Render table with all data
+                    }
+                });
+            })
+            .catch(error => console.error(error));
 
-				// Create HTML table
-				var tbody = document.querySelector('#csvTable tbody');
-				for (var i = 0; i < data.length; i++) {
-					var row = document.createElement('tr');
-					for (var prop in data[i]) {
-						var cell = document.createElement('td');
-						cell.innerHTML = data[i][prop];
-						row.appendChild(cell);
-					}
-					tbody.appendChild(row);
-				}
-			})
-			.catch(error => console.error(error));
-	</script>
+        // Function to render table with given data
+        function renderTable(data) {
+            var tbody = document.querySelector('#csvTable tbody');
+            tbody.innerHTML = ''; // Clear previous rows
+
+            for (var i = 0; i < data.length; i++) {
+                var row = document.createElement('tr');
+                for (var prop in data[i]) {
+                    var cell = document.createElement('td');
+                    cell.innerHTML = data[i][prop];
+                    row.appendChild(cell);
+                }
+                tbody.appendChild(row);
+            }
+        }
+
+        // Search button event listener
+        var searchButton = document.querySelector('#searchButton');
+        searchButton.addEventListener('click', function () {
+            var searchInput = document.querySelector('#searchInput');
+            var searchText = searchInput.value.toLowerCase();
+            var filteredData = data.filter(function (obj) {
+                var values = Object.values(obj).join(' ').toLowerCase();
+                return values.includes(searchText);
+            });
+            renderTable(filteredData); // Render table with filtered data
+        });
+    </script>
+
 </body>
 </html>
