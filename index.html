@@ -51,6 +51,11 @@
         #tableContainer {
             margin-top: 40px;
         }
+
+        /* Add a new class for the "Next Date" cells */
+        .no-font {
+            font-family: Arial, Helvetica, sans-serif !important;
+        }
     </style>
 </head>
 <body>
@@ -107,6 +112,8 @@
             row.appendChild(partyNameCell);
             var nextDateCell = document.createElement('td');
             nextDateCell.innerHTML = data[i]['Next_Date'];
+            // Add the "no-font" class to the "Next Date" cells
+            nextDateCell.classList.add("no-font");
             row.appendChild(nextDateCell);
             tbody.appendChild(row);
         }
