@@ -38,7 +38,6 @@
         #searchContainer {
             text-align: center;
             margin: 20px 0;
-            margin-bottom: 40px; /* Add a 40px margin between the search container and table */
         }
 
         #searchInput {
@@ -48,11 +47,18 @@
         #searchButton {
             font-size: 18px;
         }
+
+        #tableContainer {
+            margin-top: 40px;
+        }
     </style>
 </head>
 <body>
-<div id="searchContainer"><input type="text" id="searchInput" placeholder="Search...">
+<div id="searchContainer">
+    <input type="text" id="searchInput" placeholder="Search...">
     <button id="searchButton">Search</button>
+</div>
+<div id="tableContainer">
     <table id="csvTable">
         <thead>
         <tr>
