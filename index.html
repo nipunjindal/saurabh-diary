@@ -43,9 +43,7 @@
         <tr>
             <th>OSN NO</th>
             <th>Party</th>
-            <th>PID</th>
-            <th>Group Code</th>
-            <th>Work Done</th>
+            <th>Next Date</th>
         </tr>
         </thead>
         <tbody>
@@ -79,17 +77,26 @@
 
             for (var i = 0; i < data.length; i++) {
                 var row = document.createElement('tr');
-                for (var prop in data[i]) {
-                    var cell = document.createElement('td');
-                    cell.innerHTML = data[i][prop];
-                    row.appendChild(cell);
-                }
+                var osnNoCell = document.createElement('td');
+                osnNoCell.innerHTML = data[i]['OSN_NO'];
+                row.appendChild(osnNoCell);
+                var partyNameCell = document.createElement('td');
+                partyNameCell.innerHTML = data[i]['Party_Name'];
+                row.appendChild(partyNameCell);
+                var nextDateCell = document.createElement('td');
+                nextDateCell.innerHTML = data[i]['Next_Date'];
+                row.appendChild(nextDateCell);
                 tbody.appendChild(row);
             }
         }
 
         // Search button event listener
         var searchButton = document.querySelector('#searchButton');
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.keyCode === 13) { // Check if enter key was pressed
+                searchButton.click(); // Trigger search button's click event
+            }
+        });
         searchButton.addEventListener('click', function () {
             var searchInput = document.querySelector('#searchInput');
             var searchText = searchInput.value.toLowerCase();
