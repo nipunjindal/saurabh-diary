@@ -46,7 +46,7 @@
             margin: 20px 0;
         }
 
-        #searchInput {
+        #searchInput, #dateInput {
             font-size: 18px;
         }
 
@@ -62,6 +62,7 @@
 <body>
 <div id="searchContainer">
     <input type="text" id="searchInput" placeholder="Search...">
+    <input type="date" id="dateInput">
     <button id="searchButton">Search</button>
 </div>
 <div id="tableContainer">
@@ -144,9 +145,19 @@
     searchButton.addEventListener('click', function () {
         var searchInput = document.querySelector('#searchInput');
         var searchText = searchInput.value.toLowerCase();
+        var dateInput = document.querySelector('#dateInput');
+        var selectedDate = dateInput.valueAsDate;
         var filteredData = data.filter(function (obj) {
             var values = Object.values(obj).join(' ').toLowerCase();
-            return values.includes(searchText);
+            var dateMatch = true;
+            if (selectedDate) {
+                var nextDate = obj.Next_Date_Object;
+                // Set time values to zero for both dates
+                nextDate.setHours(0, 0, 0, 0);
+                selectedDate.setHours(0, 0, 0, 0);
+                dateMatch = nextDate.getTime() === selectedDate.getTime();
+            }
+            return values.includes(searchText) && dateMatch;
         });
         renderTable(filteredData); // Render table with filtered data
     });
