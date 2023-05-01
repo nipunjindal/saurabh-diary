@@ -57,6 +57,28 @@
         #tableContainer {
             margin-top: 40px;
         }
+
+        @media screen and (max-width: 600px) {
+            /* Style the search input elements to stack vertically */
+            #searchContainer {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 20px 0;
+            }
+            #searchInput,
+            #dateInput,
+            #searchButton {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            /* Style the table to be full width */
+            #csvTable {
+                width: 100%;
+            }
+        }
+
     </style>
 </head>
 <body>
