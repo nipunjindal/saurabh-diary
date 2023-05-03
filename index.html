@@ -80,6 +80,10 @@
             }
         }
 
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -131,7 +135,7 @@
         .catch(error => console.error(error));
 
     // Function to render table with given data
-    function renderTable(data) {
+    function renderTable(data, searchText=null) {
         var tbody = document.querySelector('#csvTable tbody');
         tbody.innerHTML = ''; // Clear previous rows
 
@@ -141,7 +145,14 @@
             osnNoCell.innerHTML = data[i]['OSN_NO'];
             row.appendChild(osnNoCell);
             var partyNameCell = document.createElement('td');
-            partyNameCell.innerHTML = data[i]['Party_Name'];
+            var partyName = data[i]['Party_Name'];
+            if (searchText && partyName.toLowerCase().indexOf(searchText) >= 0) {
+                // Highlight the search text
+                partyName = partyName.replace(new RegExp(searchText, 'gi'), function(match) {
+                    return '<span class="highlight">' + match + '</span>';
+                });
+            }
+            partyNameCell.innerHTML = partyName;
             row.appendChild(partyNameCell);
             var nextDateCell = document.createElement('td');
             // Convert the date object to the desired format
@@ -182,7 +193,7 @@
             }
             return values.includes(searchText) && dateMatch;
         });
-        renderTable(filteredData); // Render table with filtered data
+        renderTable(filteredData, searchText); // Render table with filtered data
     });
 </script>
 </body>
