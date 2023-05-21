@@ -88,6 +88,10 @@
         #searchInput {
             font-family: 'krutidev10', Arial, Helvetica, sans-serif;
         }
+
+        #modifiedDate {
+            font-family: Arial, Helvetica, sans-serif;
+        }
     </style>
 </head>
 <body>
@@ -95,6 +99,7 @@
     <input type="text" id="searchInput" placeholder="lpZ---">
     <input type="date" id="dateInput">
     <button id="searchButton">Search</button>
+    <span id="modifiedDate"></span>
 </div>
 <div id="tableContainer">
     <table id="csvTable">
@@ -118,31 +123,39 @@
     // Path to CSV file
     var csvPath = 'data.csv';
 
-    // Load CSV data from file
-    fetch(csvPath)
-        .then(response => response.text())
-        .then(csvData => {
-            // Parse CSV using Papa Parse and convert to array of objects
+    // Fetch the CSV data and the modified date
+    Promise.all([
+        fetch(csvPath).then(response => response.text()),
+        fetch(csvPath).then(response => response.headers.get('last-modified'))
+    ])
+        .then(([csvData, modifiedDate]) => {
             Papa.parse(csvData, {
                 header: true,
                 complete: function (results) {
                     data = results.data;
-                    // Convert date strings to date objects
                     data.forEach(function (obj) {
-                        obj.Next_Date_Object = new Date(obj.Next_Date)
+                        obj.Next_Date_Object = new Date(obj.Next_Date);
                     });
-                    // Sort data by Next_Date_Object in ascending order
                     data.sort(function (a, b) {
                         return b.Next_Date_Object - a.Next_Date_Object;
                     });
-                    renderTable(data); // Render table with all data
+                    renderTable(data);
                 }
             });
+
+            const modifiedDateElement = document.querySelector('#modifiedDate');
+            const formattedModifiedDate = new Date(modifiedDate).toLocaleDateString('en-US', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+            modifiedDateElement.textContent = 'Data Update: ' + formattedModifiedDate;
         })
         .catch(error => console.error(error));
 
     // Function to render table with given data
-    function renderTable(data, searchText=null) {
+    function renderTable(data, searchText = null) {
         var tbody = document.querySelector('#csvTable tbody');
         tbody.innerHTML = ''; // Clear previous rows
 
@@ -155,7 +168,7 @@
             var partyName = data[i]['Party_Name'];
             if (searchText && partyName.toLowerCase().indexOf(searchText) >= 0) {
                 // Highlight the search text
-                partyName = partyName.replace(new RegExp(searchText, 'gi'), function(match) {
+                partyName = partyName.replace(new RegExp(searchText, 'gi'), function (match) {
                     return '<span class="highlight">' + match + '</span>';
                 });
             }
