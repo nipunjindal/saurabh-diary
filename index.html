@@ -124,11 +124,12 @@
     var data = [];
     // Path to CSV file
     var csvPath = 'data.csv';
+    var lastModifed = 'last-modified';
 
     // Fetch the CSV data and the modified date
     Promise.all([
         fetch(csvPath).then(response => response.text()),
-        fetch(csvPath).then(response => response.headers.get('last-modified'))
+        fetch(lastModifed).then(response => response.text())
     ])
         .then(([csvData, modifiedDate]) => {
             Papa.parse(csvData, {
